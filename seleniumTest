@@ -1,0 +1,44 @@
+import unittest
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+
+web_site = 'http://127.0.0.1'
+
+class TheSiteSearch(unittest.TestCase):
+
+    def setUp(self):
+        self.driver = webdriver.Chrome()
+        
+    def tearDown(self):
+        self.driver.close()
+
+    def log_into_the_site(self):
+        driver = self.driver
+        driver.implicitly_wait(10)
+        driver.get("http://127.0.0.1")
+        self.assertIn("The Site", driver.title)
+        elem = driver.find_element_by_name("Username")
+        elem.send_keys("Admin")
+        elem.send_keys(Keys.TAB)
+        elem = driver.find_element_by_name("Password")
+        elem.send_keys("password")
+        elem.send_keys(Keys.RETURN)
+        assert "No results found." not in driver.page_source
+        print('Logged In')
+
+    def navigate_to(self):
+        driver = self.driver
+        driver.implicitly_wait(10)
+        driver.get(web_site)
+        self.assertIn("The Site", driver.title)
+        nav_elem = driver.find_element_by_link_text('Store Operations')
+        nav_elem.click()
+        print('Got to Store Ops')
+
+
+
+if __name__ == "__main__":
+    unittest.main()
+
+    first_search = TheSiteSearch()
+    print('Success')
