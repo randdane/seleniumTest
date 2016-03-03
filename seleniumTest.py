@@ -131,7 +131,7 @@ def get_heading(driver):
         :return: :class: `string`
     """
     heading = driver.find_element_by_xpath('//div[@class="panel-heading"]/*')
-    return(heading.text)
+    return heading.text
 
 
 def get_rows(driver):
