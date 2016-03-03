@@ -190,9 +190,9 @@ class RowSetting:  # not sure if I should be doing this.
        
     
 if __name__ == '__main__':
-    driver = init_driver()
-    login(driver)
-    navigate(driver)
+    my_driver = init_driver()
+    login(my_driver)
+    navigate(my_driver)
     time.sleep(5)
     # driver.quit()  # All Done!
     print('Success')
