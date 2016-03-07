@@ -4,17 +4,24 @@
     something to manipulate settings.
 """
 import time
+from datetime import datetime
 from functools import wraps
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.select import Select
 # from selenium.webdriver.common.by import By
+import logging
 
+LOCATION = []
+
+logging.basicConfig(filename='myLog.log',level=logging.INFO)
+logging.info('New test started at ' +
+             datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
 def logit(func):
     @wraps(func)
     def with_logging(*args, **kwargs):
-        print(func.__name__ + ' was called.')
+        logging.info(func.__name__ + ' was called.')
         return func(*args, **kwargs)
     return with_logging
 
@@ -49,16 +56,20 @@ def navigate(driver):
         type buttons ==> call navigate again.
         :param driver: webdriver object
     """
+    global LOCATION  # keep track of overall location
+    LOCATION.append(get_heading(driver))
+    logging.info('>>'.join(LOCATION))
+    
     buttons = driver.find_elements_by_css_selector(
         'a.btn.btn-primary.btn-lg.btn-block')
     for button in buttons:
-        print(get_heading(driver))
-        print('--> pressed "{0}"' .format(button.text))
         button.click()
         navigate(driver)
     else:
         manipulate(driver)
         navigate(driver)
+        
+    del LOCATION[-1]
 
 
 @logit
@@ -70,10 +81,10 @@ def manipulate(driver):
     print(get_heading(driver))
     rows = get_rows(driver)
     buttons = determ_avail_btns(rows[0])
-        
+
     # check div tag prior to main table to determine what all to do on page
     set_heading = determ_set_heading(driver)  # not developed yet
-    
+
     # logic to manipulate buttons
     # (? might wrap with try/except decorator instead of checking first ?)
     if 'Add to Store' in buttons:
@@ -82,7 +93,7 @@ def manipulate(driver):
         pass  # go into, make change, return with success
     elif 'Edit Company Defaults' in buttons:
         pass  # go into, make change, return with success
-        
+
     nav_dropdown(driver)
 
 
@@ -140,7 +151,7 @@ def get_rows(driver):
     """
     table_rows = driver.find_elements_by_css_selector('tr')[2]
     '''
-        
+
     '''
     '''  ### possibility ###
     list_of_lists = [[td.text
@@ -187,8 +198,8 @@ class RowSetting:  # not sure if I should be doing this.
     # def function that will click on its buttons,
     #   manipulate the setting inside,
     #   and return True?
-       
-    
+
+
 if __name__ == '__main__':
     my_driver = init_driver()
     login(my_driver)
@@ -196,3 +207,5 @@ if __name__ == '__main__':
     time.sleep(5)
     # driver.quit()  # All Done!
     print('Success')
+    logging.info('Test ended at ' +
+             datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
