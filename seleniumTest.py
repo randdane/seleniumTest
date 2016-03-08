@@ -182,24 +182,6 @@ def determ_avail_btns(driver):
     return [link for link in row.text]
 
 
-class RowSetting:  # not sure if I should be doing this.
-    """ Creates an object out of a row on a settings page.
-        Takes a name, default value, (possible other values), and
-        a list of buttons.
-
-        If I do this, I think I will need to inherit from driver
-        so that I can target later settings. Very lost.
-    """
-    def __init__(self, name, def_value, buttons):
-        self.name = name
-        self.def_value = def_value
-        self.buttons = buttons  # list of buttons available
-
-    # def function that will click on its buttons,
-    #   manipulate the setting inside,
-    #   and return True?
-
-
 if __name__ == '__main__':
     my_driver = init_driver()
     login(my_driver)
