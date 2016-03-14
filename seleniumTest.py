@@ -77,22 +77,18 @@ def manipulate(driver):
     """ Analyze page and manipulate settings accordingly.
         :param driver: webdriver object
     """
-    # determine page and call appropriate function (make smart)
-    print(get_heading(driver))
     rows = get_rows(driver)
-    buttons = determ_avail_btns(rows[0])
-
+    for row in rows:
+        buttons = determ_avail_btns(row)
+        for button in buttons:
+            button.click()
+            manip_settings(driver)
+            
     # check div tag prior to main table to determine what all to do on page
     set_heading = determ_set_heading(driver)  # not developed yet
 
     # logic to manipulate buttons
     # (? might wrap with try/except decorator instead of checking first ?)
-    if 'Add to Store' in buttons:
-        pass  # go into, make change, return with success
-    elif 'Edit Company Defaults' in buttons:
-        pass  # go into, make change, return with success
-    elif 'Edit Company Defaults' in buttons:
-        pass  # go into, make change, return with success
 
     nav_dropdown(driver)
 
@@ -146,13 +142,22 @@ def get_heading(driver):
 
 
 def get_rows(driver):
-    """ Search for table, get all rows except for first one, return list.
+    """ Receive a list of row objects from a table and 
+		return a list of rows (each row a named tuple)
         :param driver: webdriver object
     """
-    table_rows = driver.find_elements_by_css_selector('tr')[2]
-    '''
+	rows = []
+    table_rows = driver.find_elements_by_css_selector('tr')
+    headers = table_rows[0].find_elements_by_css_selector('td')
+	header = [i for i in headers]
+	for row in table_rows[1:]:
+		cols = row.find_elements_by_css_selector('td')
+		buttons = cols[-1].find_elements_by_css_selector('a')
+		for button in buttons:
+			button.value_of_css_property('href')
+		
+	# append results to rows list and then return list
 
-    '''
     '''  ### possibility ###
     list_of_lists = [[td.text
                   for td in tr.find_elements_by_css_selector('td')]
@@ -180,6 +185,26 @@ def determ_avail_btns(driver):
     row = table[1].find_elements_by_css_selector(
         'a.btn.btn-primary')
     return [link for link in row.text]
+
+
+class RowSetting:
+    """ Creates an object out of a row on a settings page.
+        Takes a name, default value, (possible other values), and
+        a list of buttons.
+
+        input: (row from a table)
+		atrib: name, default value, and list of buttons
+    """
+    def __init__(self, *args):
+        self.name = args[0].text
+        self.def_value = args[1].text
+        self.buttons = args[-1]
+
+    def use_btns(self):
+		for button in self.buttons:
+			button.click()
+			# call a function to manipulate setting page
+			
 
 
 if __name__ == '__main__':
