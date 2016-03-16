@@ -79,17 +79,8 @@ def manipulate(driver):
     """
     rows = get_rows(driver)
     for row in rows:
-        buttons = determ_avail_btns(row)
-        for button in buttons:
-            button.click()
-            manip_settings(driver)
-            
-    # check div tag prior to main table to determine what all to do on page
-    set_heading = determ_set_heading(driver)  # not developed yet
-
-    # logic to manipulate buttons
-    # (? might wrap with try/except decorator instead of checking first ?)
-
+        print(row)
+		
     nav_dropdown(driver)
 
 
@@ -143,48 +134,23 @@ def get_heading(driver):
 
 def get_rows(driver):
     """ Receive a list of row objects from a table and 
-		return a list of rows (each row a named tuple)
+	return a list of rows (name, def_value, *links)
         :param driver: webdriver object
     """
-	rows = []
+    rows = []
     table_rows = driver.find_elements_by_css_selector('tr')
     headers = table_rows[0].find_elements_by_css_selector('td')
-	header = [i for i in headers]
-	for row in table_rows[1:]:
-		cols = row.find_elements_by_css_selector('td')
-		buttons = cols[-1].find_elements_by_css_selector('a')
-		for button in buttons:
-			button.value_of_css_property('href')
-		
-	# append results to rows list and then return list
-
-    '''  ### possibility ###
-    list_of_lists = [[td.text
-                  for td in tr.find_elements_by_css_selector('td')]
-                  for tr in driver.find_elements_by_css_selector('tr')]
-    list_of_dicts = [
-        dict(zip(list_of_lists[0],row)) for row in list_of_lists[1:]]
-    '''
-    '''  ### possibility ###
+    header = [i for i in headers]
     for row in table_rows[1:]:
-        if not row.find_element_by_css_selector('td').text:
-            break # because it is an empty table
+        new_row = []
         cols = row.find_elements_by_css_selector('td')
-        property_id = cols[0].text
-        co_default = cols[1].text
-    '''
-
-
-def determ_avail_btns(driver):
-    """ Get a row, check to see what buttons it contains,
-        and return a list of button names.
-        :param driver: webdriver object
-    """
-    body = driver.find_element_by_class_name('panel-body')
-    table = body.find_elements_by_css_selector('tr')
-    row = table[1].find_elements_by_css_selector(
-        'a.btn.btn-primary')
-    return [link for link in row.text]
+        new_row.append(cols[0].text)
+        new_row.append(cols[1].text)
+        buttons = cols[-1].find_elements_by_css_selector('a')
+        for button in buttons:
+            new_row.append(button.get_attribute('href'))
+        rows.append(new_row)
+    return rows
 
 
 class RowSetting:
@@ -201,10 +167,9 @@ class RowSetting:
         self.buttons = args[-1]
 
     def use_btns(self):
-		for button in self.buttons:
-			button.click()
-			# call a function to manipulate setting page
-			
+        for button in self.buttons:
+            button.click()
+	    # call a function to manipulate setting page	
 
 
 if __name__ == '__main__':
