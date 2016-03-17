@@ -144,12 +144,11 @@ def get_rows(driver):
     for row in table_rows[1:]:
         new_row = []
         cols = row.find_elements_by_css_selector('td')
-        new_row.append(cols[0].text)
-        new_row.append(cols[1].text)
+        row_obj = RowSetting(cols[0].text, cols[1].text)
         buttons = cols[-1].find_elements_by_css_selector('a')
         for button in buttons:
-            new_row.append(button.get_attribute('href'))
-        rows.append(new_row)
+            row_obj.add_btns(button.get_attribute('href'))
+        rows.append(row_obj)
     return rows
 
 
@@ -159,17 +158,16 @@ class RowSetting:
         a list of buttons.
 
         input: (row from a table)
-		atrib: name, default value, and list of buttons
+	atrib: name, default value, and list of buttons
     """
-    def __init__(self, *args):
-        self.name = args[0].text
-        self.def_value = args[1].text
-        self.buttons = args[-1]
+    def __init__(self, name, def_value):
+        self.name = name
+        self.def_value = def_value
+        self.btns = []
 
-    def use_btns(self):
-        for button in self.buttons:
-            button.click()
-	    # call a function to manipulate setting page	
+    def add_btns(self, btn):
+        """ Input: tupel of button name and its link. """
+        self.btns.append(btn)
 
 
 if __name__ == '__main__':
