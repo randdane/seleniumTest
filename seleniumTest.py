@@ -42,9 +42,9 @@ def login(driver):
     driver.get('http://10.0.222.26:8080/Account/Login')
     assert 'Horizon Retail Solutions' in driver.title
     elem = driver.find_element_by_name('Username')
-    elem.send_keys('Admin')
+    elem.send_keys('username')
     elem = driver.find_element_by_name('Password')
-    elem.send_keys('Gateway')
+    elem.send_keys('password')
     elem.send_keys(Keys.RETURN)
     assert 'No results found.' not in driver.page_source
 
